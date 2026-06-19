@@ -25,11 +25,18 @@ different sources. The engine never knows or cares which it is reading.
 ```
 file:      .mid → parse → note-event stream → engine
                                    ↘ soundfont → ear
-live:      keyboard → Web MIDI → note-event stream → engine (real-time cursor)
+live:      on-screen keyboard (click / tap / type) → note-event stream → engine (real-time cursor)
+                                   ↘ (optional) a real MIDI device feeds the same stream
+catalog:   built-in melody → note-event stream → engine        (search & add, no network)
 library:   many .mid → parse + feature + auto-tag → persisted tagged set → select → engine
 generate:  engine (arcs) → realizer (notes) → note-event stream → soundfont → ear
                                    ↘ stop at noteCount / arcCount / cadence
 ```
+
+Whatever the source, the UI labels each stream's **provenance** — **Generated** (the
+machine made it) vs **Precoded** (a loaded file, the bundled sample, or the catalog),
+plus **Live** and **Set** — on the transport, in the read view, and on every library
+card. The engine stays source-blind; only the person reading the screen is told which.
 
 ## The engine is vendored, not reinvented
 
@@ -51,19 +58,21 @@ src/
   engine/     VENDORED reader engine — the source-blind operator engine
   stream/     THE note-event stream: the one internal representation + the seam to the engine
   midi/       file ↔ stream: a dependency-free Standard MIDI File reader/writer
-  live/       keyboard → stream: the same stream, arriving in real time
+  live/       keyboard → stream: the same stream, arriving in real time (on-screen or a real device)
+  catalog/    a small built-in library of public-domain melodies: search and add into memory
+  sources/    a searchable directory of real MIDI libraries (from awesome-midi-sources)
   library/    many streams: features computed on load, auto-tags, query, OPFS persistence
   generate/   stream produced in reverse: arcs → realizer → notes, with the count controls
   play/       one player for every stream: a file and a composition play through identical code
-  ui/         the browser app wiring it together
+  ui/         the browser app wiring it together (incl. the on-screen keyboard and provenance labels)
 ```
 
 ## Build order (Input Spec §8)
 
-1. **file → stream → play** — load one `.mid`, parse to events, play through soundfont.
+1. **file → stream → play** — load one `.mid` (drag, browse, import a folder, or by URL), parse to events, play through soundfont.
 2. **stream → engine read** — feed one file's stream to the engine; show DEF/EVA/REC and surprise.
-3. **live keyboard → stream** — Web MIDI in, same stream, engine reads you in real time.
-4. **library** — many files, parse + feature + auto-tag, OPFS persistence, tag-filter UI.
+3. **live keyboard → stream** — an **on-screen keyboard** (click, tap, or type `a w s e d f t g y h u j k`); same stream, engine reads you in real time. A real MIDI device can feed the same session.
+4. **library** — many files, parse + feature + auto-tag, OPFS persistence, tag- and text-search UI, provenance shown per entry. A built-in **catalog** and a searchable directory of online **sources** fill it.
 5. **generate + count** — arc generation, realizer to notes, the count controls, played through the same path.
 
 ## Run
@@ -93,3 +102,27 @@ noteCount + soft  N notes, finish the phrase   (default — the simple dial with
 arcCount          N tension-release cycles     (structural, musical — the unit the engine generates)
 untilResolved     generate to the next full cadence and stop
 ```
+
+## Finding & importing music
+
+Three ways to fill the library, all landing as the same stream:
+
+- **Your own files** — drag `.mid` files onto the dropzone, browse, or **import a whole
+  folder** at once; each is parsed, featured, auto-tagged, and persisted to OPFS.
+- **The built-in catalog** — a handful of public-domain melodies you can search by
+  title, composer, or tag and add with one click. No network required.
+- **Online sources** — a searchable directory of real MIDI libraries (Lakh, the
+  Utrecht archive, VGMusic, Bach pages, and more), drawn from
+  [awesome-midi-sources](https://github.com/albertmeronyo/awesome-midi-sources). Open a
+  source and drop its files here, or paste a **direct `.mid` URL** to import (works for
+  hosts that serve files cross-origin, e.g. GitHub raw; others block it, so download
+  and drop).
+
+The library has a **text search** alongside the tag chips, and every entry shows its
+**provenance** badge so a Generated composition is never mistaken for a Precoded file.
+
+## Credits
+
+The online sources directory is built from
+[albertmeronyo/awesome-midi-sources](https://github.com/albertmeronyo/awesome-midi-sources).
+The reading engine under `src/engine/` is vendored from eoreader4.

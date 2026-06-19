@@ -77,4 +77,46 @@ select, input[type=number] { background: var(--panel2); color: var(--ink); borde
 .tag-mini.user { background: #2a3550; color: var(--accent); }
 .lib-actions { display: flex; gap: 6px; }
 
-@media (max-width: 720px) { main { grid-template-columns: 1fr; } }
+/* Provenance — the Generated / Precoded / Live / Set badge. */
+.prov { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); letter-spacing: .03em; text-transform: uppercase; }
+.prov:empty { display: none; }
+.prov.generated { background: rgba(240,168,104,.16); color: var(--warm); border-color: var(--warm); }
+.prov.precoded  { background: rgba(110,168,254,.16); color: var(--accent); border-color: var(--accent); }
+.prov.live      { background: rgba(123,216,143,.16); color: var(--ok); border-color: var(--ok); }
+.prov.set       { background: rgba(192,140,240,.16); color: var(--con); border-color: var(--con); }
+.prov-banner { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.lib-prov { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.now-row { margin-top: 8px; }
+code { background: var(--panel2); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-size: 12px; }
+
+/* The on-screen keyboard. */
+.live-block { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.piano { position: relative; width: 100%; height: 132px; user-select: none; touch-action: none; }
+.piano-white { display: flex; height: 100%; }
+.key { padding: 0; cursor: pointer; font: inherit; }
+.key.white { flex: 1; background: #f4f7fb; border: 1px solid #2a3240; border-radius: 0 0 5px 5px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; color: #25303f; }
+.key.white + .key.white { border-left: none; }
+.key.white.down { background: var(--accent); border-color: var(--accent); color: #0b1220; }
+.piano-black { position: absolute; top: 0; left: 0; width: 100%; height: 62%; pointer-events: none; }
+.key.black { position: absolute; top: 0; height: 100%; background: #11161f; border: 1px solid #05070b; border-radius: 0 0 4px 4px; pointer-events: auto; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; color: #9aa7b4; }
+.key.black.down { background: var(--accent); color: #0b1220; }
+.key-name { font-size: 10px; padding-bottom: 5px; pointer-events: none; }
+.key-hint { font-size: 9px; opacity: .55; pointer-events: none; }
+.key.black .key-hint { padding-bottom: 5px; }
+
+/* Find & import: catalog + sources. */
+.find-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.find-col { display: flex; flex-direction: column; gap: 8px; }
+.find-h { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .03em; color: var(--dim); }
+.find-search, .lib-search { width: 100%; max-width: 380px; background: var(--panel2); color: var(--ink); border: 1px solid var(--line); border-radius: 7px; padding: 6px 9px; font-size: 13px; }
+.find-urlrow { display: flex; gap: 6px; }
+.find-urlrow .find-search { max-width: none; flex: 1; }
+.find-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; padding-right: 2px; }
+.find-card { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; display: flex; flex-direction: column; gap: 3px; }
+.find-card .small { align-self: flex-start; margin-top: 4px; }
+.find-name { font-weight: 600; }
+a.find-name, a.find-link { color: var(--accent); text-decoration: none; }
+a.find-name:hover, a.find-link:hover { text-decoration: underline; }
+.find-by { color: var(--dim); font-size: 12px; }
+
+@media (max-width: 720px) { main { grid-template-columns: 1fr; } .find-grid { grid-template-columns: 1fr; } }

@@ -10,22 +10,38 @@
   <div id="app">
     <header>
       <h1>eoplayer <span class="sub">· eocomposer</span></h1>
-      <span id="status" class="status">one note-event stream — file, keyboard, or generated</span>
+      <span id="status" class="status">one note-event stream — file, keyboard, catalog, or generated</span>
     </header>
 
     <main>
-      <section id="input-pane" class="pane">
-        <h2>Input <span class="hint">file · live · generate — all become one stream</span></h2>
+      <section id="input-pane" class="pane wide">
+        <h2>Input <span class="hint">file · on-screen keyboard · catalog · generate — all become one stream</span></h2>
 
         <div class="dropzone" id="dropzone">
           <input type="file" id="file-input" accept=".mid,.midi,audio/midi" multiple>
-          <p>Drop <strong>.mid</strong> files, or <label for="file-input">browse</label>. Each becomes a note-event stream, featured and auto-tagged into the library.</p>
+          <input type="file" id="folder-input" accept=".mid,.midi,audio/midi" webkitdirectory multiple>
+          <p>Drop <strong>.mid</strong> files here, or <label for="file-input">browse files</label> · <label for="folder-input">import a folder</label>. Each is parsed to a note-event stream, featured and auto-tagged into the library.</p>
         </div>
 
-        <div class="row">
-          <button type="button" id="live-btn" class="primary">Enable live keyboard</button>
-          <span id="live-status" class="hint">Web MIDI — needs HTTPS and permission.</span>
+        <div class="live-block">
+          <div class="row">
+            <strong>Play live</strong>
+            <span class="hint">an on-screen keyboard — click, tap, or use your computer keys <code>a w s e d f t g y h u j k</code>. No hardware needed.</span>
+          </div>
+          <div id="keyboard-view"></div>
+          <div class="row">
+            <label class="hint"><input type="checkbox" id="kbd-keys" checked> computer keys play notes</label>
+            <button type="button" id="kbd-clear" class="small">Clear take</button>
+            <button type="button" id="kbd-save" class="small">Save take to library</button>
+            <button type="button" id="connect-midi" class="small">Connect a MIDI device</button>
+            <span id="live-status" class="hint"></span>
+          </div>
         </div>
+      </section>
+
+      <section id="find-pane" class="pane wide">
+        <h2>Find &amp; import <span class="hint">search a library of files and add them into memory</span></h2>
+        <div id="find-view"></div>
       </section>
 
       <section id="generate-pane" class="pane">
@@ -60,6 +76,9 @@
           <button type="button" id="play-btn" class="primary" disabled>▶ Play</button>
           <button type="button" id="stop-btn" disabled>■ Stop</button>
           <button type="button" id="export-btn" disabled>⤓ Export .mid</button>
+        </div>
+        <div class="row now-row">
+          <span id="now-prov" class="prov"></span>
           <span id="now-playing" class="hint">nothing loaded</span>
         </div>
       </section>
@@ -70,7 +89,11 @@
       </section>
 
       <section id="library-pane" class="pane wide">
-        <h2>Library <span class="hint">featured on load · tagged · select by tag into the engine</span></h2>
+        <h2>Library <span class="hint">featured on load · tagged · provenance shown · select by tag into the engine</span></h2>
+        <div class="row">
+          <input type="text" id="library-search" class="lib-search" placeholder="Search the library — name, tag, or source…">
+          <span class="hint">Generated and Precoded streams live together here; the badge on each says which.</span>
+        </div>
         <div id="library-view"></div>
       </section>
     </main>

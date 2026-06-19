@@ -15,10 +15,13 @@ const WEBMIDI_URL = 'https://cdn.jsdelivr.net/npm/webmidi@3/dist/esm/webmidi.esm
 import { createLiveInput } from './keyboard.js';
 
 // Enable Web MIDI and route the first (or named) input's notes into a live session.
-// Returns { live, inputs, input, disable }. `onNote`/`onPress` are forwarded to the
-// session so the engine reads and the ear hears. Rejects with a legible message on
-// the two known failure modes (no Web MIDI / permission denied).
-export const enableWebMidi = async ({ inputName, onNote, onPress, now } = {}) => {
+// Returns { live, inputs, input, disable }. Pass an existing `live` session (e.g. the
+// on-screen keyboard's) to feed a real device INTO it — same stream, two sources —
+// in which case its onPress/onNote are already wired and are not re-attached.
+// Otherwise a fresh session is created and `onNote`/`onPress` are forwarded to it.
+// Rejects with a legible message on the two known failure modes (no Web MIDI /
+// permission denied).
+export const enableWebMidi = async ({ inputName, onNote, onPress, now, live: existing } = {}) => {
   if (typeof navigator === 'undefined' || !navigator.requestMIDIAccess) {
     throw new Error('Web MIDI is unavailable here — it needs a browser over HTTPS (or localhost).');
   }
@@ -38,8 +41,8 @@ export const enableWebMidi = async ({ inputName, onNote, onPress, now } = {}) =>
   const input = inputName ? WebMidi.getInputByName(inputName) : WebMidi.inputs[0];
   if (!input) throw new Error(inputs.length ? `No MIDI input named "${inputName}".` : 'No MIDI inputs are connected.');
 
-  const live = createLiveInput({ name: input.name, now, onPress });
-  if (typeof onNote === 'function') live.onNote(onNote);
+  const live = existing || createLiveInput({ name: input.name, now, onPress });
+  if (!existing && typeof onNote === 'function') live.onNote(onNote);
 
   // WebMidi.js delivers note numbers and a normalized 0..1 attack; we restamp onset
   // = now inside the session, so the stream's timing is the player's real timing.
