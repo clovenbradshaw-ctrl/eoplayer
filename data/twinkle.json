@@ -1,0 +1,105 @@
+{
+  "name": "twinkle",
+  "tempo": 120,
+  "source": "sample",
+  "events": [
+    {
+      "pitch": 60,
+      "onset": 0,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 60,
+      "onset": 500,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 67,
+      "onset": 1000,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 67,
+      "onset": 1500,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 69,
+      "onset": 2000,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 69,
+      "onset": 2500,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 67,
+      "onset": 3000,
+      "duration": 950,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 65,
+      "onset": 3500,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 65,
+      "onset": 4000,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 64,
+      "onset": 4500,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 64,
+      "onset": 5000,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 62,
+      "onset": 5500,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 62,
+      "onset": 6000,
+      "duration": 450,
+      "velocity": 80,
+      "channel": 0
+    },
+    {
+      "pitch": 60,
+      "onset": 6500,
+      "duration": 950,
+      "velocity": 80,
+      "channel": 0
+    }
+  ]
+}
