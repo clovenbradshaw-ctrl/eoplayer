@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>eoplayer — eocomposer</title>
+  <link rel="stylesheet" href="src/ui/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>eoplayer <span class="sub">· eocomposer</span></h1>
+      <span id="status" class="status">one note-event stream — file, keyboard, or generated</span>
+    </header>
+
+    <main>
+      <section id="input-pane" class="pane">
+        <h2>Input <span class="hint">file · live · generate — all become one stream</span></h2>
+
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="file-input" accept=".mid,.midi,audio/midi" multiple>
+          <p>Drop <strong>.mid</strong> files, or <label for="file-input">browse</label>. Each becomes a note-event stream, featured and auto-tagged into the library.</p>
+        </div>
+
+        <div class="row">
+          <button type="button" id="live-btn" class="primary">Enable live keyboard</button>
+          <span id="live-status" class="hint">Web MIDI — needs HTTPS and permission.</span>
+        </div>
+      </section>
+
+      <section id="generate-pane" class="pane">
+        <h2>Generate <span class="hint">the same stream, produced in reverse</span></h2>
+        <div class="controls">
+          <label>Key
+            <select id="gen-key">
+              <option>C major</option><option>G major</option><option>D major</option>
+              <option>A major</option><option>F major</option><option>Bb major</option>
+              <option>A minor</option><option>E minor</option><option>D minor</option>
+              <option>C minor</option><option>F minor</option><option>B minor</option>
+            </select>
+          </label>
+          <label>Seed <input type="number" id="gen-seed" value="1" min="1" style="width:5em"></label>
+
+          <fieldset class="count-controls">
+            <legend>How many notes it plays</legend>
+            <label><input type="radio" name="count" value="noteCount" checked> N notes, finish the phrase <span class="hint">(default)</span></label>
+            <label><input type="radio" name="count" value="noteCountHard"> N notes, hard stop <span class="hint">(guillotine)</span></label>
+            <label><input type="radio" name="count" value="arcCount"> N tension–release arcs <span class="hint">(structural)</span></label>
+            <label><input type="radio" name="count" value="untilResolved"> until the next full cadence</label>
+            <label class="n-field">N <input type="number" id="gen-n" value="12" min="1" style="width:5em"></label>
+          </fieldset>
+
+          <button type="button" id="gen-btn" class="primary">Generate &amp; read</button>
+        </div>
+      </section>
+
+      <section id="transport-pane" class="pane">
+        <h2>Transport</h2>
+        <div class="row">
+          <button type="button" id="play-btn" class="primary" disabled>▶ Play</button>
+          <button type="button" id="stop-btn" disabled>■ Stop</button>
+          <button type="button" id="export-btn" disabled>⤓ Export .mid</button>
+          <span id="now-playing" class="hint">nothing loaded</span>
+        </div>
+      </section>
+
+      <section id="read-pane" class="pane wide">
+        <h2>The engine reads the stream <span class="hint">DEF · EVA · REC · surprise — the same surfaces that read a novel</span></h2>
+        <div id="read-view"></div>
+      </section>
+
+      <section id="library-pane" class="pane wide">
+        <h2>Library <span class="hint">featured on load · tagged · select by tag into the engine</span></h2>
+        <div id="library-view"></div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
