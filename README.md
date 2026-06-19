@@ -69,9 +69,16 @@ src/
 ## Run
 
 ```
-npm test            # node --test over the pure logic (parser, stream, read, features, generate)
+npm test            # node --test over the pure logic (parser, stream, read, features, generate, player, UI render)
+npm run demo        # the whole spine in one run: file → read → .mid round trip → generate → read the composition
 npm run serve       # static server at http://localhost:8000 — the browser app
 ```
+
+`npm run demo` is the fastest way to see it: the engine reads Twinkle and recovers
+C and G with no key supplied, the `.mid` round trip is byte-exact, the generator
+runs out tension-release arcs, and the engine — handed its own composition — finds
+the key it was given. All five build steps are implemented; the browser app wires
+them together.
 
 No build step, no bundler, no server logic — vanilla ES modules, the way eoreader4
 runs. The browser-only pieces (soundfont playback, Web MIDI, OPFS) degrade to

@@ -6,6 +6,7 @@
   "description": "eocomposer — the music fork: one note-event stream from a file, a live keyboard, or the generator, read and sounded through the same source-blind engine",
   "scripts": {
     "test": "node --test tests/*.test.js",
+    "demo": "node scripts/read-and-compose.mjs",
     "serve": "python3 -m http.server 8000"
   },
   "engines": {
