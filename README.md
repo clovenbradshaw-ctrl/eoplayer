@@ -38,6 +38,28 @@ machine made it) vs **Precoded** (a loaded file, the bundled sample, or the cata
 plus **Live** and **Set** — on the transport, in the read view, and on every library
 card. The engine stays source-blind; only the person reading the screen is told which.
 
+## Continuation — the point
+
+The reading engine is a **predictor**: at every note it builds a prior over what
+comes next and measures its surprise when the next note lands. Run that prediction
+forward with no input and the predictor *is* a generator — emit the prediction, then
+predict again from it. **Reading and generating are one faculty pointed two ways.**
+
+So these are the same operation, and they are what the whole architecture is for:
+
+```
+play three notes  → it reads them → it plays the fourth (and the phrase)
+load a file, cut it off → it reads the prefix → the generation takes over
+```
+
+`Continue` reads a **prefix** (your live notes, or a file truncated at a cut point),
+recovers its frame — the key (the DEF the mass-fold settles on), the register, your
+tempo — and writes the next notes onto the **same stream**. What you played and what
+it wrote are one note-event stream; the **seam** is marked in the reading (your notes
+tinted one way, the engine's the other, a divider where it took over) and is inaudible
+in playback. Run `npm run demo` to watch it cut Twinkle off after six notes, recover C
+major, and finish the melody in the same hand.
+
 ## The engine is vendored, not reinvented
 
 `src/engine/` is copied from eoreader4 — `core/` (the nine-operator genome, the

@@ -55,6 +55,10 @@ select, input[type=number] { background: var(--panel2); color: var(--ink); borde
 .surprise-bar { width: 14px; background: var(--warm); border-radius: 2px 2px 0 0; min-height: 1px; }
 .surprise-cell.rec .surprise-bar { background: var(--rec); box-shadow: 0 0 0 1px var(--rec); }
 .surprise-note { font-size: 10px; color: var(--dim); margin-top: 3px; }
+/* Continuation seam: your notes vs the engine's, with the divider where it took over. */
+.surprise-cell.mine { background: rgba(110,168,254,.10); }
+.surprise-cell.gen  { background: rgba(240,168,104,.12); }
+.surprise-cell.seam { box-shadow: inset 2px 0 0 var(--ok); }
 
 .surprise-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .op-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 4px; background: var(--panel2); border: 1px solid var(--line); }

@@ -9,10 +9,11 @@
 import { readFileSync } from 'node:fs';
 import { createStream } from '../src/stream/index.js';
 import { writeMidi, streamFromMidi } from '../src/midi/index.js';
-import { generate } from '../src/generate/index.js';
+import { generate, continueStream, predictedNext } from '../src/generate/index.js';
 import { readingAt, surfFold, projectGraph } from '../src/engine/index.js';
 
 const bar = (x, w = 24) => '█'.repeat(Math.round(x * w));
+const pc = (e) => ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'][((e.pitch % 12) + 12) % 12];
 
 const readReport = (stream, label) => {
   const doc = stream.toDoc();
@@ -66,6 +67,20 @@ for (const [label, opts] of [
     `${(((last.pitch % 12) + 12) % 12) === 0 ? ' (tonic — resolved)' : ''}`);
 }
 
+// 5. continuation — read a prefix, then KEEP GOING on the same stream ------------
+// The point: the reader is a predictor, and a predictor run forward is a generator.
+console.log('\n=== CONTINUATION — the reader keeps going (the point) ===');
+const prefix = loaded.clone({ events: loaded.events.slice(0, 6) });   // cut twinkle off after 6 notes
+const pred = predictedNext(prefix);
+console.log(`  you play:  ${prefix.events.map(pc).join(' ')}   → the reader predicts next: ${pred.figures.join(', ')}`);
+const { stream: continued, meta: cm } = continueStream(prefix, { noteCount: 8 });
+console.log(`  it recovered ${cm.key} from those 6 notes and wrote ${cm.addedNotes} more onto the SAME stream (seam at note ${cm.seam}):`);
+console.log(`   yours:    ${continued.events.slice(0, cm.seam).map(pc).join(' ')}`);
+console.log(`   engine:   ${continued.events.slice(cm.seam).map(pc).join(' ')}`);
+readReport(continued, 'THE ENGINE READS THE WHOLE THING — your notes + its own, one stream');
+
 console.log('\nOne stream throughout. The engine read a file and its own composition with the');
-console.log('same surfaces, and the count you choose stopped generation either on a hard');
-console.log('boundary or on a resolution. The source did not matter; the stream did.');
+console.log('same surfaces; the count you choose stopped generation on a hard boundary or a');
+console.log('resolution; and handed a prefix, the same reader CONTINUED it — because reading');
+console.log('(predict the next note) and generating (emit your prediction) are one faculty.');
+console.log('The source did not matter, and neither did the direction; the stream did.');
