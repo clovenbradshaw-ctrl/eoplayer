@@ -9,6 +9,7 @@
 
 import { readingAt, surfFold, projectGraph } from '../engine/index.js';
 import { noteName } from '../stream/index.js';
+import { provenanceOf } from './provenance.js';
 
 const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
 
@@ -17,6 +18,14 @@ export const renderReading = (container, stream) => {
   if (!stream || !stream.length) { container.appendChild(el('p', 'hint', 'No stream loaded. Drop a .mid, play live, pick from the library, or generate.')); return; }
 
   const doc = stream.toDoc();
+
+  // --- Provenance: name what is being read — Generated or Precoded — before the
+  // engine reads it (the engine itself is source-blind; the reader is not). --------
+  const prov = provenanceOf(stream.source);
+  const banner = el('div', 'prov-banner');
+  banner.appendChild(el('span', 'prov ' + prov.cls, prov.family));
+  banner.appendChild(el('span', 'hint', `${stream.name} — ${prov.detail} · ${stream.length} notes`));
+  container.appendChild(banner);
 
   // --- The DEF of the key: the pitches the whole stream keeps returning to. ------
   const g = projectGraph(doc.log);
