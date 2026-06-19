@@ -9,7 +9,7 @@
 import { streamFromMidi, writeMidi } from './midi/index.js';
 import { createStream } from './stream/index.js';
 import { createLibrary, createStore } from './library/index.js';
-import { generate } from './generate/index.js';
+import { generate, continueStream } from './generate/index.js';
 import { catalogStream } from './catalog/index.js';
 import { createPlayer, createSoundfontBackend } from './play/index.js';
 import { enableWebMidi } from './live/index.js';
@@ -26,6 +26,7 @@ const state = {
   store: null,
   library: null,
   current: null,        // the NoteStream the read view / transport act on
+  seam: null,           // when the current stream is a continuation: where yours ends
   player: null,         // lazily created on first play (AudioContext needs a gesture)
   activeTags: new Set(),
   nameQuery: '',        // the library free-text filter
@@ -62,10 +63,13 @@ const libHandlers = () => ({
 });
 
 const renderLibraryOnly = () => renderLibrary($('library-view'), state.library, libHandlers());
-const renderAll = () => { renderReading($('read-view'), state.current); renderLibraryOnly(); };
+const renderAll = () => { renderReading($('read-view'), state.current, { seam: state.seam }); renderLibraryOnly(); };
 
-const setCurrent = (stream) => {
+// setCurrent(stream, seam): seam is the note index where a continuation took over
+// (yours before it, the engine's after) — null for any ordinary stream.
+const setCurrent = (stream, seam = null) => {
   state.current = stream;
+  state.seam = seam;
   $('play-btn').disabled = $('stop-btn').disabled = $('export-btn').disabled = !stream;
   const prov = stream ? provenanceOf(stream.source) : null;
   const badge = $('now-prov');
@@ -73,7 +77,7 @@ const setCurrent = (stream) => {
   badge.textContent = prov ? prov.family : '';
   badge.title = prov ? prov.detail : '';
   $('now-playing').textContent = stream ? `${stream.name} · ${stream.length} notes · ${prov.detail}` : 'nothing loaded';
-  renderReading($('read-view'), stream);
+  renderReading($('read-view'), stream, { seam });
 };
 
 // Reading a tagged SET: concatenate the streams end-to-end into one stream and read
@@ -177,6 +181,30 @@ const runGenerate = () => {
   play(entry.stream);
 };
 
+// --- Continue: the reader keeps going from what's loaded. ------------------------
+// This is the point of the fork — play three notes and it plays the fourth; load a
+// file, cut it off, and the generation takes over. It reads the prefix (key,
+// register, tempo), writes the next notes onto the SAME stream, and marks the seam.
+const runContinue = ({ stream = state.current, after, addN = 8, resolve = false } = {}) => {
+  if (!stream || !stream.length) { status('play a few notes or load a file first, then Continue'); return; }
+  let prefix = stream;
+  if (Number.isFinite(after) && after > 0 && after < stream.length) {
+    prefix = stream.clone({ events: stream.events.slice(0, after) });   // cut it off here
+  }
+  let result;
+  try {
+    result = continueStream(prefix, resolve ? { untilResolved: true } : { noteCount: addN, soft: true });
+  } catch (e) { status(e.message); return; }
+  const { stream: out, meta } = result;
+  const entry = state.library.add(out, { tags: ['generated', 'continuation', meta.key] });
+  state.library.persist().catch(() => {});
+  setCurrent(entry.stream, meta.seam);
+  renderAll();
+  const pred = meta.predicted?.figures?.slice(0, 2).join(', ');
+  status(`read ${meta.primedNotes} notes → ${meta.key}${pred ? `, the reader predicts ${pred} next` : ''} → continued with ${meta.addedNotes} more (seam at note ${meta.seam})`);
+  play(entry.stream);
+};
+
 const exportCurrent = () => {
   if (!state.current) return;
   const bytes = writeMidi(state.current.events, { tempo: state.current.tempo, ppq: state.current.ppq });
@@ -239,9 +267,16 @@ const wire = () => {
 
   $('gen-btn').addEventListener('click', () => runGenerate());
 
+  $('cont-btn').addEventListener('click', () => runContinue({
+    after: Number($('cont-after').value) || undefined,
+    addN: Number($('cont-n').value) || 8,
+    resolve: $('cont-resolve').checked,
+  }));
+
   $('kbd-keys').addEventListener('change', (e) => state.keyboard?.setComputerKeys(e.target.checked));
   $('kbd-clear').addEventListener('click', () => clearTake());
   $('kbd-save').addEventListener('click', () => saveTake());
+  $('kbd-continue').addEventListener('click', () => runContinue({ stream: state.keyboard?.stream, addN: Number($('cont-n').value) || 8, resolve: $('cont-resolve').checked }));
   $('connect-midi').addEventListener('click', () => connectMidi());
 
   $('library-search').addEventListener('input', (e) => { state.nameQuery = e.target.value; renderLibraryOnly(); });

@@ -31,6 +31,7 @@
           <div id="keyboard-view"></div>
           <div class="row">
             <label class="hint"><input type="checkbox" id="kbd-keys" checked> computer keys play notes</label>
+            <button type="button" id="kbd-continue" class="primary small">↳ Play the next notes</button>
             <button type="button" id="kbd-clear" class="small">Clear take</button>
             <button type="button" id="kbd-save" class="small">Save take to library</button>
             <button type="button" id="connect-midi" class="small">Connect a MIDI device</button>
@@ -67,6 +68,21 @@
           </fieldset>
 
           <button type="button" id="gen-btn" class="primary">Generate &amp; read</button>
+        </div>
+      </section>
+
+      <section id="continue-pane" class="pane wide">
+        <h2>Continue <span class="hint">the reader keeps going in your hand — the point of the whole thing</span></h2>
+        <p class="hint">
+          The engine that <em>reads</em> a melody is a predictor: at every note it guesses the next one. Run that forward and it <em>writes</em>.
+          Play a few notes on the keyboard, or load a file and cut it off — it reads what's there (key, register, tempo) and continues onto the
+          <strong>same stream</strong>. Play three notes and it plays the fourth. The seam (where you stop and it takes over) is marked in the reading and inaudible in playback.
+        </p>
+        <div class="row">
+          <label>Take over after <input type="number" id="cont-after" min="1" placeholder="all" style="width:5em"> notes</label>
+          <label>Add <input type="number" id="cont-n" value="8" min="1" style="width:5em"> notes</label>
+          <label class="hint"><input type="checkbox" id="cont-resolve"> …or until a cadence</label>
+          <button type="button" id="cont-btn" class="primary">▶ Continue from what's loaded</button>
         </div>
       </section>
 

@@ -13,7 +13,7 @@ import { provenanceOf } from './provenance.js';
 
 const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
 
-export const renderReading = (container, stream) => {
+export const renderReading = (container, stream, opts = {}) => {
   container.innerHTML = '';
   if (!stream || !stream.length) { container.appendChild(el('p', 'hint', 'No stream loaded. Drop a .mid, play live, pick from the library, or generate.')); return; }
 
@@ -52,11 +52,17 @@ export const renderReading = (container, stream) => {
   const surf = surfFold(doc, Math.floor(doc.sequence.length / 2), { behind: doc.sequence.length, ahead: doc.sequence.length });
   const recSet = new Set(surf.recCursors);
 
+  // The seam: where your notes end and the engine's continuation begins. When set,
+  // the two regions are tinted and a divider is drawn — the takeover made visible.
+  const seam = Number.isInteger(opts.seam) && opts.seam > 0 && opts.seam < readings.length ? opts.seam : null;
+
   const curve = el('div', 'read-block');
-  curve.appendChild(el('h4', null, 'Surprise across the stream — REC stops where a frame broke'));
+  curve.appendChild(el('h4', null, seam ? 'Surprise across the stream — you ▏the engine continues' : 'Surprise across the stream — REC stops where a frame broke'));
   const grid = el('div', 'surprise-grid');
   for (const r of readings) {
-    const cell = el('div', 'surprise-cell' + (recSet.has(r.idx) ? ' rec' : ''));
+    const region = seam == null ? '' : (r.idx < seam ? ' mine' : ' gen');
+    const atSeam = seam != null && r.idx === seam ? ' seam' : '';
+    const cell = el('div', 'surprise-cell' + (recSet.has(r.idx) ? ' rec' : '') + region + atSeam);
     const bar = el('div', 'surprise-bar');
     bar.style.height = `${Math.round(r.surprise * 100)}%`;
     bar.title = `${r.note}: surprise ${r.surprise.toFixed(2)}${r.surprises[0] ? ' — ' + r.surprises[0].text : ''}`;
@@ -65,6 +71,7 @@ export const renderReading = (container, stream) => {
     grid.appendChild(cell);
   }
   curve.appendChild(grid);
+  if (seam) curve.appendChild(el('p', 'hint', `The first ${seam} notes are yours; the engine read them and wrote the rest. The join is in the same key and register — inaudible in playback.`));
   if (surf.recCursors.length) {
     const recs = surf.recCursors.map(c => readings.find(r => r.idx === c)?.note || c).join(', ');
     curve.appendChild(el('p', 'hint', `REC — the reading restructured at: ${recs} (a modulation or a cadence).`));

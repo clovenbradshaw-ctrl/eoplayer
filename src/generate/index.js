@@ -7,6 +7,7 @@
 // same path.
 
 export { generate, parseKey } from './generate.js';
+export { continueStream, predictedNext } from './continue.js';
 export { makeArc, rng } from './arc.js';
 export { realizeArc, degreeToPitch, SCALES } from './realize.js';
 export { accumulateByControl } from './count.js';
